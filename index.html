@@ -3,103 +3,502 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F9F8FF" id="meta-theme-color">
   <title>Clark Jacob Dizon</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <script>
+    /* Apply the saved theme before first paint so there is no flash of the
+       wrong colour scheme. Runs before the body is parsed. */
+    (function () {
+      var root = document.documentElement;
+      root.classList.add('js');
+      try {
+        var saved = localStorage.getItem('m3-theme');
+        if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+      } catch (e) { /* storage blocked — fall back to system */ }
+    })();
+  </script>
 
   <style>
     /* ==========================================================================
-       MATERIAL 3 EXPRESSIVE COLOR SYSTEM
-       Change `--m3-accent` below to customize the theme color across the site.
+       MATERIAL 3 EXPRESSIVE
+       A Matugen-style seeded tonal palette: change one accent and the whole
+       site retones. Plus the Expressive shape scale, spring motion, state
+       layers, type scale and elevation.
        ========================================================================== */
+
     :root {
-      /* 🎨 CHANGE YOUR ACCENT COLOR HERE */
+      color-scheme: light dark;
+
+      /* 🎨 CHANGE YOUR ACCENT COLOR HERE — the entire palette is generated
+         from this seed. */
       --m3-accent: #6750A4;
 
-      /* Dynamic M3 Color Generation using native CSS color-mix.
-         Tertiary is derived from the accent (blended toward a warm rose,
-         approximating M3's hue-shifted tertiary palette). Override
-         --m3-tertiary if you want full art direction control. */
-      --m3-tertiary: color-mix(in srgb, var(--m3-accent) 45%, #c2185b);
+      /* ----------------------------------------------------------------------
+         TONAL PALETTE  (generated from the seed, pure CSS)
 
-      --md-sys-color-primary: var(--m3-accent);
-      --md-sys-color-on-primary: #ffffff;
-      --md-sys-color-primary-container: color-mix(in srgb, var(--m3-accent) 18%, #ffffff);
-      --md-sys-color-on-primary-container: color-mix(in srgb, var(--m3-accent) 90%, #000000);
+         Tone  ->  OKLCH lightness:   L = (T + 16) / 116
+         (the exact CIE Lab L* -> Oklab L relation)
 
-      --md-sys-color-surface: #fdf8fd;
-      --md-sys-color-surface-container: color-mix(in srgb, var(--m3-accent) 5%, #f6f2fa);
-      --md-sys-color-surface-container-high: color-mix(in srgb, var(--m3-accent) 10%, #f0eaf6);
-      --md-sys-color-on-surface: #1c1b1f;
-      --md-sys-color-on-surface-variant: #49454f;
-      --md-sys-color-outline: #79747e;
-      --md-sys-color-outline-variant: color-mix(in srgb, var(--m3-accent) 15%, #e0d9e8);
+         Primary / secondary / tertiary are anchored to the seed, so tone 40 is
+         exactly the seed colour and the seed is never altered. Neutrals use an
+         absolute tone ladder, so surfaces stay correct for any seed hue.
+         Tone 0 is black and tone 100 is white.
+         ---------------------------------------------------------------------- */
+      --m3-white: oklch(1 0 0);
+      --m3-black: oklch(0 0 0);
 
-      /* Status tones (M3 Expressive) — derived from the accent */
-      --md-sys-color-tertiary-container: color-mix(in srgb, var(--m3-tertiary) 18%, #ffffff);
-      --md-sys-color-on-tertiary-container: color-mix(in srgb, var(--m3-tertiary) 90%, #000000);
+      /* Primary — seed hue + seed chroma */
+      --m3-p10: oklch(from var(--m3-accent) calc(l - 30 / 116) c h);
+      --m3-p20: oklch(from var(--m3-accent) calc(l - 20 / 116) c h);
+      --m3-p30: oklch(from var(--m3-accent) calc(l - 10 / 116) c h);
+      --m3-p40: oklch(from var(--m3-accent) l c h);
+      --m3-p80: oklch(from var(--m3-accent) calc(l + 40 / 116) c h);
+      --m3-p90: oklch(from var(--m3-accent) calc(l + 50 / 116) c h);
 
-      /* Shape & Typography */
-      --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      --radius-full: 9999px;
-      --radius-xl: 28px;
-      --radius-l: 16px;
-      --radius-m: 12px;
+      /* Secondary — seed hue + 6°, low chroma */
+      --m3-s10: oklch(from var(--m3-accent) calc(l - 30 / 116) 0.036 calc(h + 6));
+      --m3-s20: oklch(from var(--m3-accent) calc(l - 20 / 116) 0.036 calc(h + 6));
+      --m3-s30: oklch(from var(--m3-accent) calc(l - 10 / 116) 0.036 calc(h + 6));
+      --m3-s40: oklch(from var(--m3-accent) l 0.036 calc(h + 6));
+      --m3-s80: oklch(from var(--m3-accent) calc(l + 40 / 116) 0.036 calc(h + 6));
+      --m3-s90: oklch(from var(--m3-accent) calc(l + 50 / 116) 0.036 calc(h + 6));
+
+      /* Tertiary — seed hue + 65°, Matugen's mauve */
+      --m3-t10: oklch(from var(--m3-accent) calc(l - 30 / 116) 0.0605 calc(h + 65));
+      --m3-t20: oklch(from var(--m3-accent) calc(l - 20 / 116) 0.0605 calc(h + 65));
+      --m3-t30: oklch(from var(--m3-accent) calc(l - 10 / 116) 0.0605 calc(h + 65));
+      --m3-t40: oklch(from var(--m3-accent) l 0.0605 calc(h + 65));
+      --m3-t80: oklch(from var(--m3-accent) calc(l + 40 / 116) 0.0605 calc(h + 65));
+      --m3-t90: oklch(from var(--m3-accent) calc(l + 50 / 116) 0.0605 calc(h + 65));
+
+      /* Neutral — seed hue, very low chroma, absolute tone ladder */
+      --m3-n4:  oklch(from var(--m3-accent) calc(20 / 116) 0.013 h);
+      --m3-n6:  oklch(from var(--m3-accent) calc(22 / 116) 0.013 h);
+      --m3-n10: oklch(from var(--m3-accent) calc(26 / 116) 0.013 h);
+      --m3-n12: oklch(from var(--m3-accent) calc(28 / 116) 0.013 h);
+      --m3-n17: oklch(from var(--m3-accent) calc(33 / 116) 0.013 h);
+      --m3-n20: oklch(from var(--m3-accent) calc(36 / 116) 0.013 h);
+      --m3-n22: oklch(from var(--m3-accent) calc(38 / 116) 0.013 h);
+      --m3-n87: oklch(from var(--m3-accent) calc(103 / 116) 0.013 h);
+      --m3-n90: oklch(from var(--m3-accent) calc(106 / 116) 0.013 h);
+      --m3-n92: oklch(from var(--m3-accent) calc(108 / 116) 0.013 h);
+      --m3-n94: oklch(from var(--m3-accent) calc(110 / 116) 0.013 h);
+      --m3-n95: oklch(from var(--m3-accent) calc(111 / 116) 0.013 h);
+      --m3-n96: oklch(from var(--m3-accent) calc(112 / 116) 0.013 h);
+      --m3-n98: oklch(from var(--m3-accent) calc(114 / 116) 0.013 h);
+
+      /* Neutral variant — seed hue, slightly more chroma */
+      --m3-nv10: oklch(from var(--m3-accent) calc(26 / 116) 0.017 h);
+      --m3-nv20: oklch(from var(--m3-accent) calc(36 / 116) 0.017 h);
+      --m3-nv30: oklch(from var(--m3-accent) calc(46 / 116) 0.017 h);
+      --m3-nv50: oklch(from var(--m3-accent) calc(66 / 116) 0.017 h);
+      --m3-nv60: oklch(from var(--m3-accent) calc(76 / 116) 0.017 h);
+      --m3-nv80: oklch(from var(--m3-accent) calc(96 / 116) 0.017 h);
+      --m3-nv90: oklch(from var(--m3-accent) calc(106 / 116) 0.017 h);
+
+      /* Error — fixed hue, independent of the seed */
+      --m3-e10: oklch(calc(26 / 116) 0.178 25);
+      --m3-e20: oklch(calc(36 / 116) 0.178 25);
+      --m3-e30: oklch(calc(46 / 116) 0.178 25);
+      --m3-e40: oklch(calc(56 / 116) 0.178 25);
+      --m3-e80: oklch(calc(96 / 116) 0.178 25);
+      --m3-e90: oklch(calc(106 / 116) 0.178 25);
+
+      /* ----------------------------------------------------------------------
+         LIGHT SCHEME ROLES
+         ---------------------------------------------------------------------- */
+      --md-sys-color-primary: var(--m3-p40);
+      --md-sys-color-on-primary: var(--m3-white);
+      --md-sys-color-primary-container: var(--m3-p90);
+      --md-sys-color-on-primary-container: var(--m3-p10);
+
+      --md-sys-color-secondary: var(--m3-s40);
+      --md-sys-color-on-secondary: var(--m3-white);
+      --md-sys-color-secondary-container: var(--m3-s90);
+      --md-sys-color-on-secondary-container: var(--m3-s10);
+
+      --md-sys-color-tertiary: var(--m3-t40);
+      --md-sys-color-on-tertiary: var(--m3-white);
+      --md-sys-color-tertiary-container: var(--m3-t90);
+      --md-sys-color-on-tertiary-container: var(--m3-t10);
+
+      --md-sys-color-error: var(--m3-e40);
+      --md-sys-color-on-error: var(--m3-white);
+      --md-sys-color-error-container: var(--m3-e90);
+      --md-sys-color-on-error-container: var(--m3-e10);
+
+      --md-sys-color-surface: var(--m3-n98);
+      --md-sys-color-on-surface: var(--m3-n10);
+      --md-sys-color-surface-variant: var(--m3-nv90);
+      --md-sys-color-on-surface-variant: var(--m3-nv30);
+      --md-sys-color-surface-dim: var(--m3-n87);
+      --md-sys-color-surface-bright: var(--m3-n98);
+
+      --md-sys-color-surface-container-lowest: var(--m3-white);
+      --md-sys-color-surface-container-low: var(--m3-n96);
+      --md-sys-color-surface-container: var(--m3-n94);
+      --md-sys-color-surface-container-high: var(--m3-n92);
+      --md-sys-color-surface-container-highest: var(--m3-n90);
+
+      --md-sys-color-outline: var(--m3-nv50);
+      --md-sys-color-outline-variant: var(--m3-nv80);
+
+      --md-sys-color-inverse-surface: var(--m3-n20);
+      --md-sys-color-inverse-on-surface: var(--m3-n95);
+      --md-sys-color-inverse-primary: var(--m3-p80);
+
+      --md-sys-color-scrim: var(--m3-black);
+      --md-sys-color-shadow: var(--m3-black);
+
+      /* ----------------------------------------------------------------------
+         SHAPE SCALE  (Material 3 Expressive)
+         ---------------------------------------------------------------------- */
+      --md-sys-shape-corner-none: 0;
+      --md-sys-shape-corner-extra-small: 4px;
+      --md-sys-shape-corner-small: 8px;
+      --md-sys-shape-corner-medium: 12px;
+      --md-sys-shape-corner-large: 16px;
+      --md-sys-shape-corner-large-increased: 20px;
+      --md-sys-shape-corner-extra-large: 28px;
+      --md-sys-shape-corner-extra-large-increased: 40px;
+      --md-sys-shape-corner-full: 9999px;
+
+      /* ----------------------------------------------------------------------
+         TYPOGRAPHY  (Material 3 type scale)
+         ---------------------------------------------------------------------- */
+      --md-sys-typescale-font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+      --md-sys-typescale-display-large-size: clamp(2.75rem, 6.5vw, 4.25rem);
+      --md-sys-typescale-display-large-line: 1.05;
+      --md-sys-typescale-display-large-tracking: -0.04em;
+      --md-sys-typescale-display-large-weight: 800;
+
+      --md-sys-typescale-headline-medium-size: 1.75rem;
+      --md-sys-typescale-headline-medium-line: 1.25;
+      --md-sys-typescale-headline-medium-tracking: -0.02em;
+      --md-sys-typescale-headline-medium-weight: 800;
+
+      --md-sys-typescale-title-large-size: 1.375rem;
+      --md-sys-typescale-title-large-line: 1.3;
+      --md-sys-typescale-title-large-tracking: -0.015em;
+      --md-sys-typescale-title-large-weight: 700;
+
+      --md-sys-typescale-title-medium-size: 1.0625rem;
+      --md-sys-typescale-title-medium-weight: 700;
+
+      --md-sys-typescale-body-large-size: 1.0625rem;
+      --md-sys-typescale-body-large-line: 1.65;
+      --md-sys-typescale-body-large-weight: 400;
+
+      --md-sys-typescale-body-medium-size: 0.9375rem;
+      --md-sys-typescale-body-medium-line: 1.65;
+      --md-sys-typescale-body-medium-weight: 400;
+
+      --md-sys-typescale-label-large-size: 0.875rem;
+      --md-sys-typescale-label-large-weight: 700;
+
+      --md-sys-typescale-label-medium-size: 0.75rem;
+      --md-sys-typescale-label-medium-weight: 700;
+      --md-sys-typescale-label-medium-tracking: 0.04em;
+
+      /* ----------------------------------------------------------------------
+         MOTION  (Material 3 Expressive spring physics)
+         Springs are the damped harmonic oscillator sampled into CSS linear().
+         ---------------------------------------------------------------------- */
+      --md-sys-motion-duration-short2: 100ms;
+      --md-sys-motion-duration-short4: 200ms;
+      --md-sys-motion-duration-medium2: 300ms;
+      --md-sys-motion-duration-medium4: 400ms;
+      --md-sys-motion-duration-long2: 500ms;
+      --md-sys-motion-duration-long4: 700ms;
+      --md-sys-motion-duration-extra-long2: 1000ms;
+
+      --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+      --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+      --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+      --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+      --md-sys-motion-easing-legacy: cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* Eased fallbacks, upgraded to real springs where supported */
+      --md-sys-motion-spring-spatial-fast: var(--md-sys-motion-easing-emphasized);
+      --md-sys-motion-spring-spatial-default: var(--md-sys-motion-easing-emphasized);
+      --md-sys-motion-spring-spatial-slow: var(--md-sys-motion-easing-emphasized-decelerate);
+      --md-sys-motion-spring-effects-fast: var(--md-sys-motion-easing-emphasized);
+
+      /* ----------------------------------------------------------------------
+         ELEVATION
+         ---------------------------------------------------------------------- */
+      --md-sys-elevation-level0: none;
+      --md-sys-elevation-level1: 0 1px 2px rgba(0, 0, 0, 0.16), 0 1px 3px 1px rgba(0, 0, 0, 0.08);
+      --md-sys-elevation-level2: 0 1px 2px rgba(0, 0, 0, 0.18), 0 2px 6px 2px rgba(0, 0, 0, 0.09);
+      --md-sys-elevation-level3: 0 4px 8px 3px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.16);
+      --md-sys-elevation-level4: 0 6px 10px 4px rgba(0, 0, 0, 0.14), 0 2px 3px rgba(0, 0, 0, 0.18);
+      --md-sys-elevation-level5: 0 8px 12px 6px rgba(0, 0, 0, 0.16), 0 4px 4px rgba(0, 0, 0, 0.2);
+
+      /* State layer opacities */
+      --md-sys-state-hover-opacity: 0.08;
+      --md-sys-state-focus-opacity: 0.1;
+      --md-sys-state-press-opacity: 0.1;
     }
 
-    @media (prefers-color-scheme: dark) {
+    /* Real spring physics, where CSS linear() easing is available */
+    @supports (animation-timing-function: linear(0, 1)) {
       :root {
-        --md-sys-color-surface: #141218;
-        --md-sys-color-surface-container: color-mix(in srgb, var(--m3-accent) 12%, #211f26);
-        --md-sys-color-surface-container-high: color-mix(in srgb, var(--m3-accent) 20%, #2b2930);
-        --md-sys-color-on-surface: #e6e1e5;
-        --md-sys-color-on-surface-variant: #cac4d0;
-        --md-sys-color-outline: #938f99;
-        --md-sys-color-outline-variant: color-mix(in srgb, var(--m3-accent) 25%, #36343b);
-        --md-sys-color-primary-container: color-mix(in srgb, var(--m3-accent) 35%, #1c1b1f);
-        --md-sys-color-on-primary-container: color-mix(in srgb, var(--m3-accent) 20%, #ffffff);
-        --md-sys-color-tertiary-container: color-mix(in srgb, var(--m3-tertiary) 30%, #1c1b1f);
-        --md-sys-color-on-tertiary-container: color-mix(in srgb, var(--m3-tertiary) 20%, #ffffff);
+        --md-sys-motion-spring-spatial-fast: linear(0, 0.0949 4.3%, 0.309 8.7%, 0.5561 13%, 0.7795 17.4%, 0.9501 21.7%, 1.0595 26.1%, 1.1138 30.4%, 1.1261 34.8%, 1.1113 39.1%, 1.0831 43.5%, 1.052 47.8%, 1.0245 52.2%, 1.004 56.5%, 0.9912 60.9%, 0.9851 65.2%, 0.9842 69.6%, 0.9864 73.9%, 0.99 78.3%, 0.9939 82.6%, 0.9973 87%, 0.9998 91.3%, 1.0013 95.7%, 1 100%);
+        --md-sys-motion-spring-spatial-default: linear(0, 0.0635 4.3%, 0.2093 8.7%, 0.3856 13%, 0.559 17.4%, 0.7107 21.7%, 0.832 26.1%, 0.9217 30.4%, 0.9827 34.8%, 1.02 39.1%, 1.0392 43.5%, 1.0458 47.8%, 1.0442 52.2%, 1.0382 56.5%, 1.0303 60.9%, 1.0221 65.2%, 1.0149 69.6%, 1.0089 73.9%, 1.0045 78.3%, 1.0014 82.6%, 0.9994 87%, 0.9983 91.3%, 0.9979 95.7%, 1 100%);
+        --md-sys-motion-spring-spatial-slow: linear(0, 0.039 4.3%, 0.1312 8.7%, 0.2485 13%, 0.3723 17.4%, 0.4912 21.7%, 0.5985 26.1%, 0.6914 30.4%, 0.7688 34.8%, 0.8316 39.1%, 0.8811 43.5%, 0.9191 47.8%, 0.9476 52.2%, 0.9683 56.5%, 0.983 60.9%, 0.9929 65.2%, 0.9993 69.6%, 1.0032 73.9%, 1.0053 78.3%, 1.0062 87%, 1.0052 95.7%, 1 100%);
+        --md-sys-motion-spring-effects-fast: linear(0, 0.1301 4.3%, 0.4107 8.7%, 0.7102 13%, 0.9493 17.4%, 1.0972 21.7%, 1.1581 26.1%, 1.1552 30.4%, 1.1166 34.8%, 1.067 39.1%, 1.0229 43.5%, 0.9924 47.8%, 0.9769 52.2%, 0.9735 56.5%, 0.9779 60.9%, 0.9857 65.2%, 0.9935 69.6%, 0.9995 73.9%, 1.003 78.3%, 1.0043 82.6%, 1.004 87%, 1.0029 91.3%, 1.0016 95.7%, 1 100%);
       }
     }
 
+    /* Fallback for browsers without CSS relative color syntax — the exact
+       Material 3 baseline palette for the default seed. */
+    @supports not (color: oklch(from red l c h)) {
+      :root {
+        --m3-p10: #21005D; --m3-p20: #381E72; --m3-p30: #4F378B; --m3-p40: #6750A4;
+        --m3-p80: #D0BCFF; --m3-p90: #EADDFF;
+        --m3-s10: #1D192B; --m3-s20: #332D41; --m3-s30: #4A4458; --m3-s40: #625B71;
+        --m3-s80: #CCC2DC; --m3-s90: #E8DEF8;
+        --m3-t10: #31111D; --m3-t20: #492532; --m3-t30: #633B48; --m3-t40: #7D5260;
+        --m3-t80: #EFB8C8; --m3-t90: #FFD8E4;
+        --m3-n4: #0F0D13; --m3-n6: #141218; --m3-n10: #1D1B20; --m3-n12: #211F26;
+        --m3-n17: #2B2930; --m3-n20: #322F35; --m3-n22: #36343B; --m3-n87: #DED8E1;
+        --m3-n90: #E6E0E9; --m3-n92: #ECE6F0; --m3-n94: #F3EDF7; --m3-n95: #F4EFF4;
+        --m3-n96: #F7F2FA; --m3-n98: #FEF7FF;
+        --m3-nv10: #1D1B20; --m3-nv20: #322F35; --m3-nv30: #49454F; --m3-nv50: #79747E;
+        --m3-nv60: #938F99; --m3-nv80: #CAC4D0; --m3-nv90: #E7E0EB;
+        --m3-e10: #410E0B; --m3-e20: #601410; --m3-e30: #8C1D18; --m3-e40: #B3261E;
+        --m3-e80: #F2B8B5; --m3-e90: #F9DEDC;
+      }
+    }
+
+    /* ==========================================================================
+       DARK SCHEME ROLES
+       Applied when the visitor picks "dark", or picks "system" while the OS
+       prefers dark. (No data-theme attribute = follow the system.)
+       ========================================================================== */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) {
+        --md-sys-color-primary: var(--m3-p80);
+        --md-sys-color-on-primary: var(--m3-p20);
+        --md-sys-color-primary-container: var(--m3-p30);
+        --md-sys-color-on-primary-container: var(--m3-p90);
+
+        --md-sys-color-secondary: var(--m3-s80);
+        --md-sys-color-on-secondary: var(--m3-s20);
+        --md-sys-color-secondary-container: var(--m3-s30);
+        --md-sys-color-on-secondary-container: var(--m3-s90);
+
+        --md-sys-color-tertiary: var(--m3-t80);
+        --md-sys-color-on-tertiary: var(--m3-t20);
+        --md-sys-color-tertiary-container: var(--m3-t30);
+        --md-sys-color-on-tertiary-container: var(--m3-t90);
+
+        --md-sys-color-error: var(--m3-e80);
+        --md-sys-color-on-error: var(--m3-e20);
+        --md-sys-color-error-container: var(--m3-e30);
+        --md-sys-color-on-error-container: var(--m3-e90);
+
+        --md-sys-color-surface: var(--m3-n6);
+        --md-sys-color-on-surface: var(--m3-n90);
+        --md-sys-color-surface-variant: var(--m3-nv30);
+        --md-sys-color-on-surface-variant: var(--m3-nv80);
+        --md-sys-color-surface-dim: var(--m3-n6);
+        --md-sys-color-surface-bright: var(--m3-n22);
+
+        --md-sys-color-surface-container-lowest: var(--m3-n4);
+        --md-sys-color-surface-container-low: var(--m3-n10);
+        --md-sys-color-surface-container: var(--m3-n12);
+        --md-sys-color-surface-container-high: var(--m3-n17);
+        --md-sys-color-surface-container-highest: var(--m3-n22);
+
+        --md-sys-color-outline: var(--m3-nv60);
+        --md-sys-color-outline-variant: var(--m3-nv30);
+
+        --md-sys-color-inverse-surface: var(--m3-n90);
+        --md-sys-color-inverse-on-surface: var(--m3-n20);
+        --md-sys-color-inverse-primary: var(--m3-p40);
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --md-sys-color-primary: var(--m3-p80);
+      --md-sys-color-on-primary: var(--m3-p20);
+      --md-sys-color-primary-container: var(--m3-p30);
+      --md-sys-color-on-primary-container: var(--m3-p90);
+
+      --md-sys-color-secondary: var(--m3-s80);
+      --md-sys-color-on-secondary: var(--m3-s20);
+      --md-sys-color-secondary-container: var(--m3-s30);
+      --md-sys-color-on-secondary-container: var(--m3-s90);
+
+      --md-sys-color-tertiary: var(--m3-t80);
+      --md-sys-color-on-tertiary: var(--m3-t20);
+      --md-sys-color-tertiary-container: var(--m3-t30);
+      --md-sys-color-on-tertiary-container: var(--m3-t90);
+
+      --md-sys-color-error: var(--m3-e80);
+      --md-sys-color-on-error: var(--m3-e20);
+      --md-sys-color-error-container: var(--m3-e30);
+      --md-sys-color-on-error-container: var(--m3-e90);
+
+      --md-sys-color-surface: var(--m3-n6);
+      --md-sys-color-on-surface: var(--m3-n90);
+      --md-sys-color-surface-variant: var(--m3-nv30);
+      --md-sys-color-on-surface-variant: var(--m3-nv80);
+      --md-sys-color-surface-dim: var(--m3-n6);
+      --md-sys-color-surface-bright: var(--m3-n22);
+
+      --md-sys-color-surface-container-lowest: var(--m3-n4);
+      --md-sys-color-surface-container-low: var(--m3-n10);
+      --md-sys-color-surface-container: var(--m3-n12);
+      --md-sys-color-surface-container-high: var(--m3-n17);
+      --md-sys-color-surface-container-highest: var(--m3-n22);
+
+      --md-sys-color-outline: var(--m3-nv60);
+      --md-sys-color-outline-variant: var(--m3-nv30);
+
+      --md-sys-color-inverse-surface: var(--m3-n90);
+      --md-sys-color-inverse-on-surface: var(--m3-n20);
+      --md-sys-color-inverse-primary: var(--m3-p40);
+    }
+
+    /* ==========================================================================
+       BASE
+       ========================================================================== */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: var(--font-family);
+      font-family: var(--md-sys-typescale-font);
       background-color: var(--md-sys-color-surface);
       color: var(--md-sys-color-on-surface);
-      line-height: 1.6;
-      padding: 2rem 1rem;
+      line-height: var(--md-sys-typescale-body-large-line);
+      font-size: var(--md-sys-typescale-body-large-size);
       min-height: 100vh;
       display: flex;
       justify-content: center;
+      padding: 2rem 1rem 1rem;
+      isolation: isolate;
+      transition: background-color var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
+    }
+
+    /* Ambient expressive background — soft tonal fields behind the content */
+    .ambient {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(42rem 32rem at 12% -8%,
+          color-mix(in srgb, var(--md-sys-color-primary) 26%, transparent), transparent 62%),
+        radial-gradient(34rem 30rem at 96% 4%,
+          color-mix(in srgb, var(--md-sys-color-tertiary) 22%, transparent), transparent 60%),
+        radial-gradient(48rem 38rem at 50% 112%,
+          color-mix(in srgb, var(--md-sys-color-secondary) 20%, transparent), transparent 66%);
+      opacity: 0.55;
     }
 
     .container {
-      max-width: 860px;
+      max-width: 880px;
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      gap: 3.5rem;
     }
 
-    /* M3 Expressive Header Section */
+    /* ==========================================================================
+       STATE LAYERS  (Material 3 interaction states)
+       ========================================================================== */
+    .state-layer {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .state-layer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-color: currentColor;
+      opacity: 0;
+      pointer-events: none;
+      /* Match the host element's shape exactly, otherwise the overlay paints
+         as a hard rectangle across the rounded corners. */
+      border-radius: inherit;
+      corner-shape: inherit;
+      transition: opacity var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    }
+
+    .state-layer:hover::after { opacity: var(--md-sys-state-hover-opacity); }
+    .state-layer:focus-visible::after { opacity: var(--md-sys-state-focus-opacity); }
+    .state-layer:active::after { opacity: var(--md-sys-state-press-opacity); }
+
+    :focus-visible {
+      outline: 3px solid var(--md-sys-color-primary);
+      outline-offset: 2px;
+    }
+
+    /* The theme control is driven by JavaScript — hide it when scripting is
+       unavailable, so the page never shows a dead control. */
+    html:not(.js) .theme-switch { display: none; }
+
+    /* Visually hidden, still available to screen readers */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ==========================================================================
+       HERO
+       ========================================================================== */
     .hero {
       background: var(--md-sys-color-surface-container);
       padding: 3rem 2.5rem;
-      border-radius: var(--radius-xl);
+      border-radius: var(--md-sys-shape-corner-extra-large-increased);
       border: 1px solid var(--md-sys-color-outline-variant);
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      box-shadow: var(--md-sys-elevation-level1);
+      transition:
+        border-radius var(--md-sys-motion-duration-medium4) var(--md-sys-motion-spring-spatial-fast),
+        box-shadow var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
+    }
+
+    .hero:hover {
+      border-radius: var(--md-sys-shape-corner-extra-large);
+      box-shadow: var(--md-sys-elevation-level3);
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .hero-badge {
@@ -108,152 +507,321 @@
       gap: 0.5rem;
       background: var(--md-sys-color-primary-container);
       color: var(--md-sys-color-on-primary-container);
-      padding: 0.4rem 1rem;
-      border-radius: var(--radius-full);
-      font-size: 0.875rem;
+      padding: 0.45rem 0.95rem;
+      border-radius: var(--md-sys-shape-corner-full);
+      font-size: 0.8125rem;
       font-weight: 700;
-      width: fit-content;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .hero-badge .material-symbols-rounded {
+      font-size: 18px;
+      font-variation-settings: 'wght' 500;
     }
 
     .hero h1 {
-      font-size: clamp(2.5rem, 5vw, 3.75rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
+      font-size: var(--md-sys-typescale-display-large-size);
+      line-height: var(--md-sys-typescale-display-large-line);
+      letter-spacing: var(--md-sys-typescale-display-large-tracking);
+      font-weight: var(--md-sys-typescale-display-large-weight);
+      color: var(--md-sys-color-on-surface);
     }
 
-    .hero p {
-      font-size: 1.125rem;
-      color: var(--md-sys-color-on-surface-variant);
-      max-width: 600px;
+    /* Expressive gradient headline, where background-clip is supported */
+    @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+      .hero h1 {
+        background: linear-gradient(120deg,
+          var(--md-sys-color-on-surface) 20%,
+          var(--md-sys-color-primary) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+      }
     }
 
     .hero-subtitle {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 1rem;
+      gap: 0.55rem;
+      font-size: var(--md-sys-typescale-body-large-size);
       font-weight: 600;
       color: var(--md-sys-color-primary);
       max-width: 100%;
     }
 
+    .hero-subtitle .material-symbols-rounded {
+      font-size: 20px;
+      font-variation-settings: 'wght' 500;
+    }
+
     .hero-subtitle a {
-      color: var(--md-sys-color-primary);
+      color: inherit;
       text-decoration: none;
+      border-bottom: 2px solid color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
+      padding-bottom: 1px;
+      transition: border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
     }
 
     .hero-subtitle a:hover {
-      text-decoration: underline;
+      border-bottom-color: var(--md-sys-color-primary);
     }
 
-    /* Social Links (M3 Tonal Chips) */
+    .hero > p:not(.hero-subtitle) {
+      font-size: var(--md-sys-typescale-body-large-size);
+      color: var(--md-sys-color-on-surface-variant);
+      max-width: 62ch;
+    }
+
+    /* ==========================================================================
+       THEME SWITCH  (Material 3 segmented button)
+       ========================================================================== */
+    .theme-switch {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      gap: 0;
+      padding: 4px;
+      margin-left: auto;
+      border-radius: var(--md-sys-shape-corner-full);
+      background: var(--md-sys-color-surface-container-highest);
+      border: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .theme-switch__thumb {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: calc((100% - 8px) / 3);
+      border-radius: var(--md-sys-shape-corner-full);
+      background: var(--md-sys-color-secondary-container);
+      box-shadow: var(--md-sys-elevation-level1);
+      transform: translateX(calc(var(--theme-index, 2) * 100%));
+      transition: transform var(--md-sys-motion-duration-medium4) var(--md-sys-motion-spring-spatial-fast);
+      pointer-events: none;
+    }
+
+    .theme-switch__btn {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      border: none;
+      background: transparent;
+      border-radius: var(--md-sys-shape-corner-full);
+      color: var(--md-sys-color-on-surface-variant);
+      cursor: pointer;
+      transition: color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    }
+
+    .theme-switch__btn .material-symbols-rounded {
+      font-size: 20px;
+      font-variation-settings: 'wght' 500;
+    }
+
+    .theme-switch__btn[aria-pressed="true"] {
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .theme-switch__btn:hover {
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .theme-switch__btn[aria-pressed="true"]:hover {
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    /* ==========================================================================
+       SOCIAL LINKS  (Material 3 assist chips)
+       ========================================================================== */
     .social-links {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
     }
 
     .social-chip {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.25rem;
-      border-radius: var(--radius-full);
+      gap: 0.65rem;
+      padding: 0.45rem 1.1rem 0.45rem 0.45rem;
+      border-radius: var(--md-sys-shape-corner-full);
       background: var(--md-sys-color-surface-container-high);
       color: var(--md-sys-color-on-surface);
       text-decoration: none;
       font-weight: 600;
-      font-size: 0.9rem;
-      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+      font-size: 0.875rem;
       border: 1px solid transparent;
+      transition:
+        background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+        transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-spring-effects-fast),
+        border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+    }
+
+    .social-chip .material-symbols-rounded {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: var(--md-sys-shape-corner-full);
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      font-size: 18px;
+      font-variation-settings: 'wght' 500;
     }
 
     .social-chip:hover {
-      background: var(--md-sys-color-primary);
-      color: var(--md-sys-color-on-primary);
-      transform: translateY(-2px);
+      background: var(--md-sys-color-primary-container);
+      border-color: var(--md-sys-color-primary);
+      transform: translateY(-2px) scale(1.02);
     }
 
-    /* Section Styling */
+    .social-chip:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    /* ==========================================================================
+       SECTION TITLE
+       ========================================================================== */
     .section-title {
-      font-size: 1.75rem;
-      font-weight: 800;
-      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.85rem;
+      font-size: var(--md-sys-typescale-headline-medium-size);
+      line-height: var(--md-sys-typescale-headline-medium-line);
+      letter-spacing: var(--md-sys-typescale-headline-medium-tracking);
+      font-weight: var(--md-sys-typescale-headline-medium-weight);
+      margin-bottom: 1.75rem;
     }
 
-    /* Projects Grid */
+    .section-icon {
+      display: grid;
+      place-items: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: var(--md-sys-shape-corner-large);
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      font-size: 22px;
+      flex-shrink: 0;
+      transition: transform var(--md-sys-motion-duration-medium4) var(--md-sys-motion-spring-spatial-fast);
+    }
+
+    .section-title:hover .section-icon {
+      transform: rotate(-8deg) scale(1.06);
+    }
+
+    /* ==========================================================================
+       PROJECTS
+       ========================================================================== */
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
       gap: 1.5rem;
     }
 
     .project-card {
       background: var(--md-sys-color-surface-container);
       border: 1px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--radius-xl);
-      padding: 2rem;
+      border-radius: var(--md-sys-shape-corner-extra-large);
+      padding: 1.75rem;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 1.5rem;
-      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+      gap: 1.1rem;
+      min-width: 0;
+      transition:
+        transform var(--md-sys-motion-duration-medium4) var(--md-sys-motion-spring-spatial-fast),
+        border-radius var(--md-sys-motion-duration-medium4) var(--md-sys-motion-spring-spatial-fast),
+        background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+        border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+        box-shadow var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
     }
 
     .project-card:hover {
       border-color: var(--md-sys-color-primary);
-      transform: translateY(-4px);
+      border-radius: var(--md-sys-shape-corner-large);
       background: var(--md-sys-color-surface-container-high);
+      transform: translateY(-6px);
+      box-shadow: var(--md-sys-elevation-level3);
     }
 
-    .project-card--in-progress {
-      border-color: var(--md-sys-color-tertiary-container);
-    }
-
-    .project-card--in-progress:hover {
-      border-color: var(--md-sys-color-tertiary-container);
-    }
-
-    .project-title {
+    .project-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 0.5rem;
+      gap: 0.75rem;
+    }
+
+    .project-icon {
+      display: grid;
+      place-items: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: var(--md-sys-shape-corner-large);
+      background: var(--md-sys-color-primary-container);
+      color: var(--md-sys-color-on-primary-container);
+      font-size: 24px;
+      flex-shrink: 0;
+      transition:
+        border-radius var(--md-sys-motion-duration-medium4) var(--md-sys-motion-spring-spatial-fast),
+        transform var(--md-sys-motion-duration-medium4) var(--md-sys-motion-spring-spatial-fast);
+    }
+
+    .project-card:hover .project-icon {
+      /* 50% renders the same circle as a full radius, but stays a real
+         length during the transition. A `9999px` sentinel would interpolate
+         against the raw value, so the spring's overshoot would fling the
+         radius past zero and flash a square before settling. */
+      border-radius: 50%;
+      transform: rotate(-6deg);
+    }
+
+    .project-card h3 {
+      font-size: var(--md-sys-typescale-title-large-size);
+      line-height: var(--md-sys-typescale-title-large-line);
+      letter-spacing: var(--md-sys-typescale-title-large-tracking);
+      font-weight: var(--md-sys-typescale-title-large-weight);
+    }
+
+    .project-card p {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: var(--md-sys-typescale-body-medium-size);
+      line-height: var(--md-sys-typescale-body-medium-line);
     }
 
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      font-size: 0.6875rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      padding: 0.25rem 0.75rem;
-      border-radius: var(--radius-full);
+      gap: 0.4rem;
+      font-size: var(--md-sys-typescale-label-medium-size);
+      font-weight: var(--md-sys-typescale-label-medium-weight);
+      letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: var(--md-sys-shape-corner-full);
       white-space: nowrap;
       flex-shrink: 0;
-    }
-
-    .status-badge--in-progress {
       background: var(--md-sys-color-tertiary-container);
       color: var(--md-sys-color-on-tertiary-container);
     }
 
-    .project-header h3 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      margin-bottom: 0;
+    .status-dot {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: var(--md-sys-shape-corner-full);
+      background: currentColor;
+      animation: status-pulse 2.4s var(--md-sys-motion-easing-standard) infinite;
     }
 
-    .project-header p {
-      color: var(--md-sys-color-on-surface-variant);
-      font-size: 0.95rem;
+    @keyframes status-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.75); }
     }
 
     .tags {
@@ -263,10 +831,11 @@
     }
 
     .tag {
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.25rem 0.75rem;
-      border-radius: var(--radius-full);
+      font-size: var(--md-sys-typescale-label-medium-size);
+      font-weight: var(--md-sys-typescale-label-medium-weight);
+      letter-spacing: 0.02em;
+      padding: 0.3rem 0.75rem;
+      border-radius: var(--md-sys-shape-corner-full);
       background: var(--md-sys-color-primary-container);
       color: var(--md-sys-color-on-primary-container);
     }
@@ -274,91 +843,262 @@
     .project-footer {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: auto;
       padding-top: 1rem;
       border-top: 1px solid var(--md-sys-color-outline-variant);
     }
 
-    .btn-link {
+    /* ==========================================================================
+       BUTTONS  (Material 3 filled + tonal)
+       ========================================================================== */
+    .btn {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      color: var(--md-sys-color-primary);
+      height: 2.5rem;
+      padding: 0 1.15rem;
+      border-radius: var(--md-sys-shape-corner-full);
+      font-family: inherit;
+      font-size: var(--md-sys-typescale-label-large-size);
+      font-weight: var(--md-sys-typescale-label-large-weight);
       text-decoration: none;
-      font-weight: 700;
-      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition:
+        transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-spring-effects-fast),
+        background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
     }
 
-    .btn-link:hover {
-      text-decoration: underline;
+    .btn .material-symbols-rounded {
+      font-size: 18px;
+      font-variation-settings: 'wght' 500;
     }
 
-    /* Footer */
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn--filled {
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .btn--filled:hover {
+      background: var(--md-sys-color-inverse-primary);
+      color: var(--md-sys-color-inverse-surface);
+    }
+
+    .btn--tonal {
+      background: var(--md-sys-color-secondary-container);
+      color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .btn--tonal:hover {
+      background: var(--md-sys-color-secondary);
+      color: var(--md-sys-color-on-secondary);
+    }
+
+    /* ==========================================================================
+       FOOTER
+       ========================================================================== */
     footer {
       text-align: center;
-      padding: 2rem 0;
+      padding: 1rem 0 2rem;
       color: var(--md-sys-color-on-surface-variant);
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
     }
 
-    @media (max-width: 480px) {
-      .projects-grid {
-        grid-template-columns: 1fr;
+    /* ==========================================================================
+       ENTRANCE MOTION
+       ========================================================================== */
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes weight-in {
+      from { font-variation-settings: 'wght' 250; }
+      to { font-variation-settings: 'wght' 800; }
+    }
+
+    .hero > * {
+      animation: rise-in var(--md-sys-motion-duration-long4) var(--md-sys-motion-spring-spatial-slow) backwards;
+    }
+
+    .hero-top { animation-delay: 0ms; }
+    .hero h1 { animation-delay: 70ms; }
+    .hero-subtitle { animation-delay: 140ms; }
+    .hero > p:not(.hero-subtitle) { animation-delay: 210ms; }
+    .social-links { animation-delay: 280ms; }
+
+    .hero h1 {
+      animation-name: rise-in, weight-in;
+      animation-duration: var(--md-sys-motion-duration-long4), var(--md-sys-motion-duration-extra-long2);
+      animation-timing-function: var(--md-sys-motion-spring-spatial-slow), var(--md-sys-motion-easing-emphasized-decelerate);
+    }
+
+    .section-title {
+      animation: rise-in var(--md-sys-motion-duration-long4) var(--md-sys-motion-spring-spatial-slow) backwards;
+      animation-delay: 120ms;
+    }
+
+    .project-card {
+      animation: rise-in var(--md-sys-motion-duration-long4) var(--md-sys-motion-spring-spatial-slow) backwards;
+    }
+
+    .project-card:nth-child(1) { animation-delay: 200ms; }
+    .project-card:nth-child(2) { animation-delay: 280ms; }
+    .project-card:nth-child(3) { animation-delay: 360ms; }
+    .project-card:nth-child(4) { animation-delay: 440ms; }
+
+    /* ==========================================================================
+       THEME TRANSITION  (circular reveal, Material 3 Expressive)
+       ========================================================================== */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    ::view-transition-old(root) {
+      z-index: 1;
+    }
+
+    ::view-transition-new(root) {
+      z-index: 9999;
+      animation: theme-reveal var(--md-sys-motion-duration-long2) var(--md-sys-motion-spring-spatial-default);
+    }
+
+    @keyframes theme-reveal {
+      from {
+        clip-path: circle(0 at var(--reveal-x, 50%) var(--reveal-y, 50%));
       }
-      .hero {
-        padding: 2rem 1.5rem;
+      to {
+        clip-path: circle(var(--reveal-radius, 150%) at var(--reveal-x, 50%) var(--reveal-y, 50%));
+      }
+    }
+
+    /* ==========================================================================
+       PROGRESSIVE ENHANCEMENT — true Material 3 squircle corners
+       Chromium 139+ only; every other browser keeps the border-radius.
+       ========================================================================== */
+    @supports (corner-shape: squircle) {
+      .hero,
+      .project-card,
+      .section-icon {
+        corner-shape: squircle;
+      }
+
+      /* Fully rounded elements (buttons, icon chips) keep the default round
+         corner shape — a superellipse at a full radius renders as a bulging,
+         non-circular shape rather than a clean pill or circle. */
+      .btn,
+      .project-icon {
+        corner-shape: round;
+      }
+    }
+
+    /* ==========================================================================
+       RESPONSIVE
+       ========================================================================== */
+    @media (max-width: 600px) {
+      body { padding: 1rem 0.75rem 0.5rem; }
+      .hero { padding: 1.75rem 1.25rem; border-radius: var(--md-sys-shape-corner-extra-large); }
+      .hero:hover { border-radius: var(--md-sys-shape-corner-extra-large); }
+      .hero-top { gap: 0.75rem; }
+      .project-card { padding: 1.35rem; border-radius: var(--md-sys-shape-corner-large); }
+      .project-card:hover { border-radius: var(--md-sys-shape-corner-medium); }
+      .container { gap: 2.75rem; }
+    }
+
+    /* ==========================================================================
+       REDUCED MOTION
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 <body>
 
+  <div class="ambient" aria-hidden="true"></div>
+
   <div class="container">
-    
+
     <header class="hero">
-      <div class="hero-badge">
-        <span class="material-symbols-outlined" style="font-size: 18px;">code</span>
-        Available for collaboration
+      <div class="hero-top">
+        <div class="hero-badge">
+          <span class="material-symbols-rounded">code</span>
+          Available for collaboration
+        </div>
+
+        <div class="theme-switch" role="group" aria-label="Colour theme">
+          <span class="theme-switch__thumb" aria-hidden="true"></span>
+          <button type="button" class="theme-switch__btn" data-theme-value="light" aria-pressed="false" title="Light theme">
+            <span class="material-symbols-rounded" aria-hidden="true">light_mode</span>
+            <span class="sr-only">Light theme</span>
+          </button>
+          <button type="button" class="theme-switch__btn" data-theme-value="dark" aria-pressed="false" title="Dark theme">
+            <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
+            <span class="sr-only">Dark theme</span>
+          </button>
+          <button type="button" class="theme-switch__btn" data-theme-value="system" aria-pressed="true" title="Match system theme">
+            <span class="material-symbols-rounded" aria-hidden="true">contrast</span>
+            <span class="sr-only">Match system theme</span>
+          </button>
+        </div>
       </div>
-      
+
       <h1>Hi, I'm Clark Jacob Dizon</h1>
 
       <p class="hero-subtitle">
-        <span class="material-symbols-outlined" style="font-size: 18px;">mail</span>
+        <span class="material-symbols-rounded" aria-hidden="true">mail</span>
         <a href="mailto:cobb@cobbdzon.cc">cobb@cobbdzon.cc</a>
       </p>
 
       <p>Developer and Linux enthusiast with 2+ years building web applications, network security lab environments, and embedded hardware tools. Driven by scripting, containerization, and clean system administration.</p>
-      
+
       <nav class="social-links">
-        <a href="https://github.com/cobbdzon" class="social-chip" target="_blank" rel="noopener">
-          <span class="material-symbols-outlined">code</span> GitHub
+        <a href="https://github.com/cobbdzon" class="social-chip state-layer" target="_blank" rel="noopener">
+          <span class="material-symbols-rounded" aria-hidden="true">code</span> GitHub
         </a>
-        <a href="https://linkedin.cobbdzon.cc" class="social-chip" target="_blank" rel="noopener">
-          <span class="material-symbols-outlined">work</span> LinkedIn
+        <a href="https://linkedin.cobbdzon.cc" class="social-chip state-layer" target="_blank" rel="noopener">
+          <span class="material-symbols-rounded" aria-hidden="true">work</span> LinkedIn
         </a>
       </nav>
     </header>
 
     <main>
       <h2 class="section-title">
-        <span class="material-symbols-outlined">folder_open</span>
+        <span class="section-icon material-symbols-rounded" aria-hidden="true">folder_open</span>
         Featured Projects
       </h2>
 
       <div class="projects-grid">
-        
-        <article class="project-card project-card--in-progress">
-          <div class="project-header">
-            <div class="project-title">
-              <h3>Slice of Life</h3>
-              <span class="status-badge status-badge--in-progress">
-                <span class="material-symbols-outlined" style="font-size: 14px;">pending</span>
-                In Progress
-              </span>
-            </div>
-            <p>Full-stack SSR journaling web app built with Bun, Hono, and SQLite. Features secure httpOnly JWT authentication, per-user CRUD authorization, and an automated background garbage collector for orphaned file uploads.</p>
+
+        <article class="project-card">
+          <div class="project-top">
+            <span class="project-icon material-symbols-rounded" aria-hidden="true">auto_stories</span>
+            <span class="status-badge">
+              <span class="status-dot" aria-hidden="true"></span>
+              In Progress
+            </span>
           </div>
+          <h3>Slice of Life</h3>
+          <p>Full-stack SSR journaling web app built with Bun, Hono, and SQLite. Features secure httpOnly JWT authentication, per-user CRUD authorization, and an automated background garbage collector for orphaned file uploads.</p>
           <div class="tags">
             <span class="tag">TypeScript</span>
             <span class="tag">Bun</span>
@@ -367,21 +1107,22 @@
             <span class="tag">SQLite</span>
           </div>
           <div class="project-footer">
-            <a href="https://sliceoflife.cobbdzon.cc" class="btn-link" target="_blank" rel="noopener">
-              View <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
+            <a href="https://sliceoflife.cobbdzon.cc" class="btn btn--filled state-layer" target="_blank" rel="noopener">
+              View <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
             </a>
 
-            <a href="https://github.com/cobbdzon/slice-of-life" class="btn-link" target="_blank" rel="noopener">
-                View Repository <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
+            <a href="https://github.com/cobbdzon/slice-of-life" class="btn btn--tonal state-layer" target="_blank" rel="noopener">
+              Repository <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
             </a>
           </div>
         </article>
 
         <article class="project-card">
-          <div class="project-header">
-            <h3>Aritmatica</h3>
-            <p>Grade 11 math e-learning platform featuring KaTeX rendering, embedded Desmos calculators, and interactive JSON flashcards. Built with a modular HTML/SCSS pipeline, GSAP scroll animations, and freemium content gating deployed on GitHub Pages.</p>
+          <div class="project-top">
+            <span class="project-icon material-symbols-rounded" aria-hidden="true">calculate</span>
           </div>
+          <h3>Aritmatica</h3>
+          <p>Grade 11 math e-learning platform featuring KaTeX rendering, embedded Desmos calculators, and interactive JSON flashcards. Built with a modular HTML/SCSS pipeline, GSAP scroll animations, and freemium content gating deployed on GitHub Pages.</p>
           <div class="tags">
             <span class="tag">HTML</span>
             <span class="tag">SCSS</span>
@@ -390,46 +1131,44 @@
             <span class="tag">Github Pages</span>
           </div>
           <div class="project-footer">
-            <a href="https://aritmatica.github.io" class="btn-link" target="_blank" rel="noopener">
-              View <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
+            <a href="https://aritmatica.github.io" class="btn btn--filled state-layer" target="_blank" rel="noopener">
+              View <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
             </a>
 
-            <a href="https://github.com/cobbdzon/aritmatica.github.io" class="btn-link" target="_blank" rel="noopener">
-              View Repository <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
+            <a href="https://github.com/cobbdzon/aritmatica.github.io" class="btn btn--tonal state-layer" target="_blank" rel="noopener">
+              Repository <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
             </a>
           </div>
         </article>
 
         <article class="project-card">
-          <div class="project-header">
-            <div class="project-title">
-              <h3>ITSO Monitoring System</h3>
-            </div>
-            <p>Web-based time-in and out system proof of concept for Computer Lab Assistants at Technological Institute of the Philippines Q.C. Campus. Developed during my time in the Information Technology Service Office.</p>
+          <div class="project-top">
+            <span class="project-icon material-symbols-rounded" aria-hidden="true">schedule</span>
           </div>
+          <h3>ITSO Monitoring System</h3>
+          <p>Web-based time-in and out system proof of concept for Computer Lab Assistants at Technological Institute of the Philippines Q.C. Campus. Developed during my time in the Information Technology Service Office.</p>
           <div class="tags">
             <span class="tag">JavaScript</span>
             <span class="tag">EJS</span>
             <span class="tag">PostgreSQL</span>
           </div>
           <div class="project-footer">
-            <a href="https://github.com/cobbdzon/itso-monitoring-system" class="btn-link" target="_blank" rel="noopener">
-              View Repository <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
+            <a href="https://github.com/cobbdzon/itso-monitoring-system" class="btn btn--tonal state-layer" target="_blank" rel="noopener">
+              Repository <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
             </a>
           </div>
         </article>
 
-        <article class="project-card project-card--in-progress">
-          <div class="project-header">
-            <div class="project-title">
-              <h3>Restroom Radar</h3>
-              <span class="status-badge status-badge--in-progress">
-                <span class="material-symbols-outlined" style="font-size: 14px;">pending</span>
-                In Progress
-              </span>
-            </div>
-            <p>A crowdsourced directory/map of the best restrooms to do your business on campus. Specifically built for the Intramuros Campus of Mapúa University.</p>
+        <article class="project-card">
+          <div class="project-top">
+            <span class="project-icon material-symbols-rounded" aria-hidden="true">location_on</span>
+            <span class="status-badge">
+              <span class="status-dot" aria-hidden="true"></span>
+              In Progress
+            </span>
           </div>
+          <h3>Restroom Radar</h3>
+          <p>A crowdsourced directory/map of the best restrooms to do your business on campus. Specifically built for the Intramuros Campus of Mapúa University.</p>
           <div class="tags">
             <span class="tag">TypeScript</span>
             <span class="tag">Bun</span>
@@ -438,12 +1177,12 @@
             <span class="tag">React</span>
           </div>
           <div class="project-footer">
-            <a href="https://restroomradar.cobbdzon.cc" class="btn-link" target="_blank" rel="noopener">
-              View <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
+            <a href="https://restroomradar.cobbdzon.cc" class="btn btn--filled state-layer" target="_blank" rel="noopener">
+              View <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
             </a>
 
-            <a href="https://github.com/cobbdzon/restroom-radar" class="btn-link" target="_blank" rel="noopener">
-              View Repository <span class="material-symbols-outlined" style="font-size: 18px;">arrow_outward</span>
+            <a href="https://github.com/cobbdzon/restroom-radar" class="btn btn--tonal state-layer" target="_blank" rel="noopener">
+              Repository <span class="material-symbols-rounded" aria-hidden="true">arrow_outward</span>
             </a>
           </div>
         </article>
@@ -452,13 +1191,153 @@
     </main>
 
     <footer>
-      <p>© <span id="year"></span> Clark Jacob Dizon • Built with Material 3 Expressive • Self-hosted on my Homelab</p>
+      <p>© <span id="year">2026</span> Clark Jacob Dizon • Built with Material 3 Expressive • Self-hosted on my Homelab</p>
     </footer>
 
   </div>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ------------------------------------------------------------------
+       Theme control: light / dark / system, persisted in localStorage.
+       ------------------------------------------------------------------ */
+    (function () {
+      var root = document.documentElement;
+      var buttons = Array.prototype.slice.call(
+        document.querySelectorAll('.theme-switch__btn')
+      );
+      var switcher = document.querySelector('.theme-switch');
+      var metaThemeColor = document.getElementById('meta-theme-color');
+      var ORDER = ['light', 'dark', 'system'];
+      var KEY = 'm3-theme';
+      var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      function current() {
+        return root.getAttribute('data-theme') || 'system';
+      }
+
+      function syncButtons(value) {
+        var index = ORDER.indexOf(value);
+        if (index < 0) index = 2;
+        switcher.style.setProperty('--theme-index', index);
+        buttons.forEach(function (btn) {
+          btn.setAttribute('aria-pressed', String(btn.dataset.themeValue === value));
+        });
+      }
+
+      function syncMeta() {
+        if (!metaThemeColor) return;
+        /* Read the resolved surface colour back as a hex string so the meta
+           tag stays valid in every browser. */
+        var probe = document.createElement('div');
+        probe.style.position = 'absolute';
+        probe.style.width = '1px';
+        probe.style.height = '1px';
+        probe.style.backgroundColor = 'var(--md-sys-color-surface)';
+        root.appendChild(probe);
+        var resolved = getComputedStyle(probe).backgroundColor;
+        root.removeChild(probe);
+
+        var hex = null;
+        var rgb = resolved.match(/rgba?\(([^)]+)\)/);
+        if (rgb) {
+          hex = '#' + rgb[1].split(/[\s,\/]+/)
+            .slice(0, 3)
+            .map(function (v) { return Number(v).toString(16).padStart(2, '0'); })
+            .join('');
+        } else {
+          var canvas = document.createElement('canvas');
+          canvas.width = canvas.height = 1;
+          var ctx = canvas.getContext('2d');
+          ctx.fillStyle = resolved;
+          ctx.fillRect(0, 0, 1, 1);
+          var d = ctx.getImageData(0, 0, 1, 1).data;
+          hex = '#' + [d[0], d[1], d[2]]
+            .map(function (v) { return v.toString(16).padStart(2, '0'); })
+            .join('');
+        }
+        metaThemeColor.setAttribute('content', hex);
+      }
+
+      function setTheme(value) {
+        if (value === 'system') {
+          root.removeAttribute('data-theme');
+        } else {
+          root.setAttribute('data-theme', value);
+        }
+        syncButtons(value);
+        syncMeta();
+      }
+
+      var activeTransition = null;
+
+      function transitionTo(value, origin) {
+        /* The segmented control reacts immediately; only the colour change
+           waits for the view transition. */
+        syncButtons(value);
+
+        var commit = function () { setTheme(value); };
+
+        if (!document.startViewTransition || reducedMotion.matches) {
+          commit();
+          return;
+        }
+
+        /* A second click while a transition is running should not queue up. */
+        if (activeTransition) {
+          try { activeTransition.skipTransition(); } catch (e) { /* noop */ }
+          activeTransition = null;
+        }
+
+        var rect = origin ? origin.getBoundingClientRect() : null;
+        var x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+        var y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+        var radius = Math.hypot(
+          Math.max(x, window.innerWidth - x),
+          Math.max(y, window.innerHeight - y)
+        );
+
+        root.style.setProperty('--reveal-x', x + 'px');
+        root.style.setProperty('--reveal-y', y + 'px');
+        root.style.setProperty('--reveal-radius', radius + 'px');
+
+        try {
+          var transition = document.startViewTransition(commit);
+          activeTransition = transition;
+          transition.finished
+            .catch(function () { /* aborted — nothing to do */ })
+            .then(function () {
+              if (activeTransition === transition) activeTransition = null;
+            });
+        } catch (e) {
+          commit();
+        }
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var value = btn.dataset.themeValue;
+          try {
+            if (value === 'system') localStorage.removeItem(KEY);
+            else localStorage.setItem(KEY, value);
+          } catch (e) { /* storage blocked */ }
+          transitionTo(value, btn);
+        });
+      });
+
+      /* Keep the "system" segment accurate when the OS scheme changes. */
+      var osScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      var onSchemeChange = function () {
+        if (current() === 'system') syncMeta();
+      };
+      if (osScheme.addEventListener) osScheme.addEventListener('change', onSchemeChange);
+      else if (osScheme.addListener) osScheme.addListener(onSchemeChange);
+
+      /* Initial state — the saved theme was already applied before paint. */
+      syncButtons(current());
+      syncMeta();
+    })();
   </script>
 </body>
 </html>
