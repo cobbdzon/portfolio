@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!--
+    Source for favicon.ico / apple-touch-icon.png as well as this file.
+    A code-bracket mark on the Material 3 primary container.
+    Regenerate with:  tools/render-assets.sh
+  -->
+  <rect width="64" height="64" rx="16" fill="#6750A4"/>
+  <path d="M22 22 L11 32 L22 42" fill="none" stroke="#EADDFF" stroke-width="6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M42 22 L53 32 L42 42" fill="none" stroke="#EADDFF" stroke-width="6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M37 17 L27 47" fill="none" stroke="#D0BCFF" stroke-width="5" stroke-linecap="round"/>
+</svg>

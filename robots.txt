@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Meta's crawlers. FacebookExternalHit is what builds the link preview for
+# Facebook, Messenger, Instagram DMs and WhatsApp, so blocking it breaks the
+# preview on every one of those surfaces at once.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: meta-externalads
+Allow: /
+
+User-agent: meta-externalfetcher
+Allow: /
+
+Sitemap: https://cobbdzon.cc/sitemap.xml
